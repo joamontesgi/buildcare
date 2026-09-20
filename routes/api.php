@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AgendaController;
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BuildingController;
 use App\Http\Controllers\Api\ManagementCompanyController;
 use App\Http\Controllers\Api\PendingJobController;
@@ -14,7 +15,12 @@ use App\Http\Controllers\Api\WorkOrderController;
 use App\Http\Controllers\Api\ZoneController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('test', fn () => response('hola', 200, ['Content-Type' => 'text/plain; charset=UTF-8']));
+
+Route::post('login', [AuthController::class, 'login']);
+
 Route::middleware(['auth:sanctum'])->group(function (): void {
+    Route::post('logout', [AuthController::class, 'logout']);
     Route::get('/user', [UserController::class, 'show']);
 
     // Roles legibles por cualquier usuario autenticado (para poblar dropdowns)
