@@ -1,0 +1,2 @@
+-- BuildCare — MySQL 8+ (solo estructura)
+-- Script completo con CREATE DATABASE + datos: buildcare_mysql.sql

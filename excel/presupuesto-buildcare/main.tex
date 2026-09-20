@@ -1,0 +1,409 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla]{babel}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{colortbl}
+
+\geometry{margin=2.5cm}
+\definecolor{buildcare}{RGB}{0,82,136}
+\definecolor{lightgray}{RGB}{245,245,245}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=buildcare,
+    urlcolor=buildcare,
+    pdftitle={Presupuesto BuildCare - Laravel + React},
+    pdfauthor={BuildCare}
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{buildcare}{BuildCare}}
+\fancyhead[R]{\small\textcolor{buildcare}{Presupuesto App Web}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\titleformat{\section}{\Large\bfseries\color{buildcare}}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries\color{buildcare}}{\thesubsection}{1em}{}
+
+\newcommand{\money}[1]{\$#1}
+
+\begin{document}
+
+% --- Portada ---
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    {\Huge\bfseries\color{buildcare} Presupuesto T\'ecnico y Comercial\par}
+    \vspace{0.8cm}
+    {\LARGE Migraci\'on Excel $\rightarrow$ Aplicaci\'on Web\par}
+    \vspace{0.5cm}
+    {\Large Backend Laravel + Frontend React\par}
+    \vspace{2cm}
+    {\large\textbf{Cliente:} BuildCare\par}
+    \vspace{0.3cm}
+    {\large\textbf{Proyecto:} Sistema de Reporting, Schedule y Billing\par}
+    \vspace{0.3cm}
+    {\large\textbf{Fecha:} Septiembre 2026\par}
+    \vfill
+    \begin{tabular}{rl}
+        \textbf{Presupuesto total:} & \money{1.600.000} COP \\
+        \textbf{Stack:} & Laravel (API REST) + React (SPA) \\
+        \textbf{Autenticaci\'on:} & JWT \\
+    \end{tabular}
+    \vspace{1.5cm}
+    {\small Entregables: c\'odigo fuente, manual de usuario, manual t\'ecnico, despliegue en producci\'on\par}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% --- 1. Resumen ejecutivo ---
+\section{Resumen ejecutivo}
+
+El sistema actual de BuildCare opera sobre dos archivos Excel que gestionan el ciclo completo de operaciones: planificaci\'on semanal de trabajos (Schedule), registro hist\'orico de proyectos, facturaci\'on y cat\'alogos maestros de propiedades.
+
+Este documento presenta el an\'alisis t\'ecnico de ambos archivos, la identificaci\'on de entidades repetidas, la propuesta de m\'odulos (CRUDs) para la aplicaci\'on web, y el presupuesto detallado bajo la tarifa acordada:
+
+\begin{itemize}[noitemsep]
+    \item Cada CRUD funcional: \money{100.000} COP
+    \item Autenticaci\'on JWT: \money{250.000} COP
+    \item Despliegue, hosting y dominio: \money{350.000} COP
+\end{itemize}
+
+\begin{center}
+    \fbox{\parbox{0.85\textwidth}{
+        \centering
+        \vspace{0.3cm}
+        {\LARGE\bfseries\color{buildcare} Total: \money{1.600.000} COP}
+        \vspace{0.3cm}
+    }}
+\end{center}
+
+% --- 2. Archivos analizados ---
+\section{Archivos Excel analizados}
+
+\begin{table}[h]
+\centering
+\caption{Archivos fuente del an\'alisis}
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Archivo} & \textbf{Tama\~no} & \textbf{Hojas} \\
+\midrule
+09.\ BC Projects Reporting September 2026.xlsx & $\sim$4 MB & 6 \\
+Schedule August 31 to 06 September 2026 -2.xlsx & $\sim$290 KB & 11 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Archivo de Reporting (operaciones + facturaci\'on)}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}llp{6.5cm}@{}}
+\toprule
+\textbf{Hoja} & \textbf{Registros} & \textbf{Funci\'on} \\
+\midrule
+PROJECTS IN PROCESS & $\sim$21.037 & Registro hist\'orico anual de trabajos \\
+BILLING SEPTEMBER 01-30 & $\sim$290 & Mismo trabajo + campos financieros \\
+Master Management - Clerks & $\sim$693 & Cat\'alogo maestro de propiedades \\
+Pendings List - Further Review & $\sim$14 & Seguimiento semanal con follow-up \\
+DAILY RECORDS EMERGENCIES & Variable & Trabajos de emergencia + pre-factura \\
+Color Legend & $\sim$10 & Reglas de color/estado por clerk \\
+\bottomrule
+\end{tabular}
+\caption{Hojas del archivo de Reporting}
+\end{table}
+
+\subsection{Archivo de Schedule (planificaci\'on semanal)}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}llp{6.5cm}@{}}
+\toprule
+\textbf{Hoja} & \textbf{Registros} & \textbf{Funci\'on} \\
+\midrule
+Mon -- Sun (7 hojas) & $\sim$698/semana & Misma plantilla repetida por d\'ia \\
+Pendings & $\sim$33 & Jobs pendientes del schedule \\
+Master sheet (Clientes) & $\sim$646 & Duplicado del master de Reporting \\
+Outer Area Zones & $\sim$176 & Supervisor $\rightarrow$ edificio (zona externa) \\
+Cheat Sheet & Plantilla & Estructura vac\'ia del schedule por zona \\
+\bottomrule
+\end{tabular}
+\caption{Hojas del archivo de Schedule}
+\end{table}
+
+% --- 3. Repeticiones ---
+\section{An\'alisis de repeticiones}
+
+\subsection{Entidad central: Orden de trabajo / Job}
+
+La misma estructura de $\sim$17 campos aparece en \textbf{6 lugares distintos} del Excel:
+
+\begin{quote}
+\small
+\texttt{DATE | STATE | MANAGEMENT | BC CLERK | BUILDING/ADDRESS | UNIT | SIZE | WORKSITE STATUS | JOB DESCRIPTION | JOB AWARDED TO | REQUEST/PO/WTN/WO | BC WORK ORDER/ESTIMATE | EXTRAS | NOTES | WORK ORDER STATUS | COSTOS}
+\end{quote}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{D\'onde aparece} & \textbf{Diferencia respecto al n\'ucleo} \\
+\midrule
+Projects in Process & Registro permanente anual \\
+Billing & + material, invoice, profit, overhead 15\% \\
+Schedule ($\times$7 d\'ias) & + fecha, zona geogr\'afica, status report vendor \\
+Pendings (schedule) & Jobs sin fecha asignada \\
+Pendings Further Review & + start/end date, follow-up \\
+Emergencies & + equipment/food/transportation \\
+\bottomrule
+\end{tabular}
+\caption{Reutilizaci\'on de la entidad Job}
+\end{table}
+
+\textbf{Conclusi\'on:} Se implementa \textbf{un solo CRUD de \'Ordenes de Trabajo} con tipos/vistas (\texttt{daily}, \texttt{billing}, \texttt{pending}, \texttt{emergency}). No se cobran 6 CRUDs separados.
+
+\subsection{Cat\'alogo maestro de edificios (duplicado)}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Hoja Reporting} & \textbf{Hoja Schedule} \\
+\midrule
+Master Management - Clerks & Master sheet (Clientes) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Campos compartidos: direcci\'on, estado, management, clerk, supervisor, PM, travel expense, paint specs, notas. Total: \textbf{693 edificios} $\rightarrow$ \textbf{1 CRUD de Edificios}.
+
+\subsection{Lookups repetidos en todas las hojas}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Cat\'alogo} & \textbf{Valores \'unicos} & \textbf{Aparece en} \\
+\midrule
+Management & $\sim$66 empresas & Todas las hojas de jobs \\
+BC Clerk & 4 c\'odigos (A-V, N-O, N/A, TBD) & Todas las hojas \\
+State & NJ, PA, NY, CT & Todas las hojas \\
+Worksite Status & $\sim$53 variantes & Jobs + Schedule \\
+Vendors/Crews & DVM, Alluda, Unique Cleaning, etc. & Campo Job Awarded To \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Schedule semanal = 1 plantilla $\times$ 7 d\'ias}
+
+Las 7 hojas (Lun--Dom) son id\'enticas en estructura; solo cambia la fecha y los trabajos del d\'ia ($\sim$125 jobs/d\'ia laborable, $\sim$40 el s\'abado). Se implementa \textbf{un m\'odulo de Schedule} con selector de fecha.
+
+% --- 4. Arquitectura ---
+\section{Arquitectura propuesta}
+
+\begin{center}
+\begin{tabular}{c}
+\hline
+\textbf{FRONTEND (React)} \\
+Dashboard | Schedule | Jobs | Billing | Masters | Auth \\
+\hline
+$\downarrow$ REST API + JWT \\
+\hline
+\textbf{BACKEND (Laravel)} \\
+Auth JWT | API Resources | Validations | Exports PDF/Excel \\
+\hline
+$\downarrow$ \\
+\hline
+\textbf{Base de datos (MySQL/PostgreSQL)} \\
+users | buildings | managements | zones | vendors | \\
+work\_orders | billing\_records | schedule\_days | catalogs \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Nota:} Existe un inicio parcial en Laravel (\texttt{buildings}, \texttt{schedule\_entries}), pero el alcance completo requiere API REST + frontend React.
+
+% --- 5. Modulos ---
+\section{M\'odulos / CRUDs propuestos}
+
+\begin{longtable}{@{}clp{5.8cm}r@{}}
+\toprule
+\textbf{\#} & \textbf{M\'odulo} & \textbf{Qu\'e reemplaza del Excel} & \textbf{Valor} \\
+\midrule
+\endhead
+1 & Usuarios y roles & Clerks, supervisores, controllers, admin. Permisos por rol & \money{100.000} \\
+2 & Edificios / Propiedades & Master Management + Master Clientes ($\sim$693 registros) & \money{100.000} \\
+3 & Empresas de Management & 66 management companies como cat\'alogo & \money{100.000} \\
+4 & Supervisores y zonas geogr\'aficas & Outer Area Zones + \'areas del Schedule & \money{100.000} \\
+5 & Proveedores / Crews / Vendors & Cat\'alogo Job Awarded To & \money{100.000} \\
+6 & Cat\'alogos del sistema & Worksite status, work order status, sizes, Color Legend & \money{100.000} \\
+7 & \'Ordenes de trabajo (Jobs) & Projects in Process + Schedule + Pendings + Emergencies & \money{100.000} \\
+8 & Facturaci\'on / Billing & Material cost, invoice, profit, overhead 15\% & \money{100.000} \\
+9 & Schedule diario & Cabecera del d\'ia + vista semanal por zona & \money{100.000} \\
+10 & Reportes y exportaciones & Export PDF/Excel del schedule y billing & \money{100.000} \\
+\midrule
+& \multicolumn{2}{l}{\textbf{Autenticaci\'on JWT}} & \money{250.000} \\
+& \multicolumn{2}{l}{\textbf{Despliegue + hosting + dominio}} & \money{350.000} \\
+\midrule
+& \multicolumn{2}{l}{\textbf{TOTAL}} & \textbf{\money{1.600.000}} \\
+\bottomrule
+\caption{Desglose de m\'odulos y presupuesto}
+\end{longtable}
+
+% --- 6. Presupuesto ---
+\section{Presupuesto total}
+
+\begin{table}[h]
+\centering
+\rowcolors{2}{lightgray}{white}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\textbf{Concepto} & \textbf{Cantidad} & \textbf{Unitario} & \textbf{Subtotal} \\
+\midrule
+CRUDs funcionales & 10 & \money{100.000} & \money{1.000.000} \\
+Autenticaci\'on JWT & 1 & \money{250.000} & \money{250.000} \\
+Despliegue + hosting + dominio & 1 & \money{350.000} & \money{350.000} \\
+\midrule
+\textbf{Total} & & & \textbf{\money{1.600.000} COP} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% --- 7. Entregables ---
+\section{Entregables incluidos}
+
+\begin{itemize}
+    \item C\'odigo fuente completo (repositorio Git): backend Laravel + frontend React
+    \item Manual de usuario (operaci\'on diaria: schedule, jobs, billing, cat\'alogos)
+    \item Manual t\'ecnico (instalaci\'on, arquitectura, API, despliegue, mantenimiento)
+    \item Base de datos migrada con datos maestros (edificios, management, cat\'alogos)
+    \item Aplicaci\'on desplegada en producci\'on con dominio y certificado SSL
+\end{itemize}
+
+% --- 8. Detalle tecnico ---
+\section{Detalle t\'ecnico por m\'odulo cr\'itico}
+
+\subsection{M\'odulo 7 --- \'Ordenes de trabajo}
+
+Unifica lo que hoy son 6 hojas diferentes del Excel. Campos compartidos:
+
+\begin{itemize}[noitemsep]
+    \item \texttt{date}, \texttt{state\_id}, \texttt{management\_id}, \texttt{clerk\_id}, \texttt{building\_id}
+    \item \texttt{unit}, \texttt{size}, \texttt{worksite\_status\_id}, \texttt{job\_description}
+    \item \texttt{vendor\_id}, \texttt{request\_po}, \texttt{bc\_work\_order}, \texttt{extras}
+    \item \texttt{controller\_notes}, \texttt{work\_order\_status\_id}, \texttt{labor\_cost}, \texttt{extras\_cost}
+\end{itemize}
+
+Campos espec\'ificos por tipo:
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Tipo} & \textbf{Campos adicionales} \\
+\midrule
+schedule & \texttt{schedule\_date}, \texttt{area\_zone\_id} \\
+pending review & \texttt{follow\_up\_date}, \texttt{start\_date}, \texttt{end\_date} \\
+emergency & \texttt{equipment\_food\_transport} \\
+billing & \texttt{material\_cost}, \texttt{invoice\_number}, \texttt{overhead}, \texttt{profit} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{M\'odulo 8 --- Facturaci\'on (f\'ormulas)}
+
+F\'ormulas del Excel a replicar en el backend:
+
+\begin{align*}
+\text{TOTAL BC COST} &= \text{TOTAL LABOR COST} + \text{MATERIAL COST} \\
+\text{OVERHEAD (15\%)} &= \text{TOTAL BC COST} \times 0.15 \\
+\text{PROFIT \$} &= \text{BC PROJECT PRICE} - \text{TOTAL BC COST} - \text{OVERHEAD} \\
+\text{PROFIT \%} &= \frac{\text{PROFIT \$}}{\text{BC PROJECT PRICE}} \times 100
+\end{align*}
+
+\subsection{M\'odulo 6 --- Color Legend}
+
+Reglas de negocio por clerk (ej.\ Natalia Osorio: rosa = material pendiente, amarillo = facturado). Se implementa como configuraci\'on de estados visuales en el frontend React.
+
+% --- 9. Exclusiones ---
+\section{Elementos que NO se cobran como CRUD extra}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}lp{8cm}@{}}
+\toprule
+\textbf{Elemento del Excel} & \textbf{Motivo} \\
+\midrule
+7 hojas de d\'ias (Mon--Sun) & Vista filtrada del m\'odulo Schedule \\
+Master Clientes vs Master Management & Mismo CRUD Edificios \\
+Cheat Sheet & Plantilla vac\'ia del Schedule \\
+Color Legend & Parte del cat\'alogo de estados \\
+Projects in Process vs Schedule rows & Mismo CRUD Work Orders \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% --- 10. Cronograma ---
+\section{Estimaci\'on de esfuerzo}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lr@{}}
+\toprule
+\textbf{Fase} & \textbf{Tiempo estimado} \\
+\midrule
+Backend Laravel (API + JWT + 10 m\'odulos) & 8--10 semanas \\
+Frontend React (UI + formularios + vistas) & 6--8 semanas \\
+Migraci\'on de datos Excel $\rightarrow$ BD & 1 semana \\
+Testing + manuales + despliegue & 2 semanas \\
+\midrule
+\textbf{Total estimado} & \textbf{17--21 semanas} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% --- 11. Stack tecnologico ---
+\section{Stack tecnol\'ogico}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Capa} & \textbf{Tecnolog\'ia} \\
+\midrule
+Backend & Laravel 11+ (API REST) \\
+Autenticaci\'on & JWT (tymon/jwt-auth o Laravel Sanctum) \\
+Frontend & React 18+ (Vite, React Router, TanStack Query) \\
+Base de datos & MySQL 8 / PostgreSQL 16 \\
+Exportaciones & Laravel Excel + DomPDF / Snappy \\
+Despliegue & VPS/Cloud (DigitalOcean, AWS, etc.) + Nginx + SSL \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\vfill
+\begin{center}
+\small\textcolor{buildcare}{\textbf{BuildCare} --- Presupuesto App Web --- Septiembre 2026}
+\end{center}
+
+\end{document}

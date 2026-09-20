@@ -1,0 +1,70 @@
+erDiagram
+  MANAGEMENT_COMPANIES ||--o{ BUILDINGS : gestiona
+  ZONES ||--o{ BUILDINGS : agrupa
+  STAFF ||--o{ BUILDINGS : "supervisa (runner)"
+  STAFF ||--o{ SCHEDULE_DAYS : "on call"
+  SCHEDULE_DAYS ||--o{ WORK_ORDERS : contiene
+  BUILDINGS ||--o{ WORK_ORDERS : recibe
+  CREWS ||--o{ WORK_ORDERS : ejecuta
+  WORK_ORDERS ||--o| PENDING_JOBS : "si sigue abierto"
+
+  MANAGEMENT_COMPANIES {
+    int management_id PK
+    string name
+  }
+  ZONES {
+    int zone_id PK
+    string zone_name
+    string state
+  }
+  STAFF {
+    int staff_id PK
+    string name
+    string role
+    string phone
+    string email
+  }
+  BUILDINGS {
+    int building_id PK
+    string name
+    string address
+    string state
+    int management_id FK
+    int zone_id FK
+    int bc_supervisor_id FK
+    string billing_clerk_code
+    string travel_expense
+    string paint_specs
+    string notes
+  }
+  CREWS {
+    int crew_id PK
+    string company_name
+    string contact_name
+  }
+  SCHEDULE_DAYS {
+    date day_id PK
+    string day_of_week
+    int supervisor_on_call_id FK
+    string default_crews_note
+  }
+  WORK_ORDERS {
+    int job_id PK
+    date day_id FK
+    int building_id FK
+    int crew_id FK
+    string unit_area
+    string size
+    string worksite_status
+    string job_description
+    string request_po_wtn_wo
+    string bc_estimate_ref
+    string extras
+    string special_notes
+    string vendor_status_report
+  }
+  PENDING_JOBS {
+    int pending_id PK
+    int job_id FK
+    string reason_pending
+  }
