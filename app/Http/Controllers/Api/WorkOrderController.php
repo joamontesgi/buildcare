@@ -86,7 +86,9 @@ class WorkOrderController extends Controller
         $order = DB::transaction(function () use ($data) {
             $nested = $this->extractNested($data);
             $order = WorkOrder::query()->create($data);
-            $this->syncNested($order, $nested);
+            if ($nested !== null) {
+                $this->syncNested($order, $nested);
+            }
 
             return $order;
         });

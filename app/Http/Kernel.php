@@ -37,7 +37,8 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-            \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+            // Token auth (Authorization: Bearer). No EnsureFrontendRequestsAreStateful:
+            // with localhost:5173 in SANCTUM_STATEFUL_DOMAINS, POST /api/* would require CSRF.
             \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ],
