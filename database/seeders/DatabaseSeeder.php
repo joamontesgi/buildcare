@@ -2,43 +2,43 @@
 
 namespace Database\Seeders;
 
-use App\Models\Role;
-use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
+    /**
+     * Orden respetando FKs del esquema bc_management + auth.
+     */
     public function run(): void
     {
-        $this->call([RoleSeeder::class]);
-
-        $adminRole = Role::query()->where('slug', Role::SLUG_ADMIN)->first();
-
-        User::updateOrCreate(
-            ['email' => 'admin@buildcare.com'],
-            [
-                'name' => 'Admin BuildCare',
-                'password' => Hash::make('password'),
-                'role' => User::ROLE_ADMIN,
-                'role_id' => $adminRole?->id,
-            ],
-        );
-
-        $schedulerRole = Role::query()->where('slug', Role::SLUG_SCHEDULER_COORDINATOR)->first();
-
-        User::updateOrCreate(
-            ['email' => 'scheduler@buildcare.com'],
-            [
-                'name' => 'Scheduler Demo',
-                'password' => Hash::make('password'),
-                'role' => Role::SLUG_SCHEDULER_COORDINATOR,
-                'role_id' => $schedulerRole?->id,
-            ],
-        );
-
+        // Auth (user_roles, users)
         $this->call([
-            BcManagementSeeder::class,
+            RoleSeeder::class,
+            UserSeeder::class,
+        ]);
+
+        // Catálogos base
+        $this->call([
+            StateSeeder::class,
+            BillingClerkSeeder::class,
+            ManagementCompanySeeder::class,
+            StaffRoleSeeder::class,
+            EmployeeSeeder::class,
+            JobStatusSeeder::class,
+            WorksiteStatusSeeder::class,
+            RequestSourceSeeder::class,
+            VendorSeeder::class,
+        ]);
+
+        // Propiedades y personal asignado
+        $this->call([
+            PropertySeeder::class,
+            PropertyStaffSeeder::class,
+        ]);
+
+        // Operación (work_orders + tablas hijas)
+        $this->call([
+            WorkOrderSeeder::class,
         ]);
     }
 }
