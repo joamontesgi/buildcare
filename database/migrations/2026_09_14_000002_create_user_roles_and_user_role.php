@@ -8,8 +8,8 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('roles', function (Blueprint $table): void {
-            $table->id('role_id');
+        Schema::create('user_roles', function (Blueprint $table): void {
+            $table->id();
             $table->string('slug', 64)->unique();
             $table->string('name');
             $table->string('description')->nullable();
@@ -22,7 +22,7 @@ return new class extends Migration
             $table->unsignedBigInteger('role_id')->nullable()->after('email');
 
             $table->foreign('role_id')
-                ->references('role_id')->on('roles')
+                ->references('id')->on('user_roles')
                 ->nullOnDelete();
         });
     }
@@ -34,6 +34,6 @@ return new class extends Migration
             $table->dropColumn('role_id');
         });
 
-        Schema::dropIfExists('roles');
+        Schema::dropIfExists('user_roles');
     }
 };

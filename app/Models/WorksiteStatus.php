@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class ManagementCompany extends Model
+class WorksiteStatus extends Model
 {
     public $timestamps = false;
 
@@ -13,8 +13,8 @@ class ManagementCompany extends Model
         'name',
     ];
 
-    public function properties(): HasMany
+    public function workOrders(): HasMany
     {
-        return $this->hasMany(Property::class, 'management_id');
+        return $this->hasMany(WorkOrder::class, 'worksite_status_id');
     }
 }

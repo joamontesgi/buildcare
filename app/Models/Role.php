@@ -5,11 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/** Roles de aplicación (autenticación / permisos). Tabla: user_roles. */
 class Role extends Model
 {
-    protected $table = 'roles';
-
-    protected $primaryKey = 'role_id';
+    protected $table = 'user_roles';
 
     protected $fillable = [
         'slug',
@@ -24,7 +23,6 @@ class Role extends Model
         'is_admin' => 'boolean',
     ];
 
-    // Slugs canónicos del negocio (usados por seeders y middleware).
     public const SLUG_ADMIN = 'admin';
 
     public const SLUG_SCHEDULER_COORDINATOR = 'scheduler_coordinator';
@@ -40,8 +38,6 @@ class Role extends Model
     public const SLUG_SUPERVISOR = 'supervisor';
 
     /**
-     * Los 7 roles del negocio, en el orden en que se muestran.
-     *
      * @return array<int, array<string, mixed>>
      */
     public static function catalog(): array
@@ -101,6 +97,6 @@ class Role extends Model
 
     public function users(): HasMany
     {
-        return $this->hasMany(User::class, 'role_id', 'role_id');
+        return $this->hasMany(User::class, 'role_id');
     }
 }

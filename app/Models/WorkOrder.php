@@ -4,77 +4,65 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class WorkOrder extends Model
 {
-    protected $table = 'work_orders';
+    public const UPDATED_AT = 'updated_at';
 
-    protected $primaryKey = 'job_id';
+    public const CREATED_AT = 'created_at';
 
     protected $fillable = [
-        'day_id',
-        'building_id',
-        'subcontractor_id',
+        'property_id',
         'unit_area',
         'size',
-        'worksite_status',
+        'worksite_status_id',
+        'job_status_id',
         'job_description',
-        'request_po_wtn_wo',
         'bc_work_order',
-        'bc_estimate_ref',
+        'bc_estimate',
         'extras',
-        'special_notes',
-        'vendor_status_report',
-        'assigned_employee_ids',
+        'special_notes_sequence',
+        'request_source_id',
     ];
 
-    protected $casts = [
-        'day_id' => 'date:Y-m-d',
-        'assigned_employee_ids' => 'array',
-    ];
-
-    public const STATUS_SCHEDULED = 'scheduled';
-
-    public const STATUS_IN_PROGRESS = 'in_progress';
-
-    public const STATUS_COMPLETED = 'completed';
-
-    public const STATUS_PENDING = 'pending';
-
-    public const STATUS_CANCELLED = 'cancelled';
-
-    /**
-     * @return array<string, string>
-     */
-    public static function worksiteStatuses(): array
+    public function property(): BelongsTo
     {
-        return [
-            self::STATUS_SCHEDULED => 'Scheduled',
-            self::STATUS_IN_PROGRESS => 'In Progress',
-            self::STATUS_COMPLETED => 'Completed',
-            self::STATUS_PENDING => 'Pending',
-            self::STATUS_CANCELLED => 'Cancelled',
-        ];
+        return $this->belongsTo(Property::class, 'property_id');
     }
 
-    public function scheduleDay(): BelongsTo
+    public function worksiteStatus(): BelongsTo
     {
-        return $this->belongsTo(ScheduleDay::class, 'day_id', 'day_id');
+        return $this->belongsTo(WorksiteStatus::class, 'worksite_status_id');
     }
 
-    public function building(): BelongsTo
+    public function jobStatus(): BelongsTo
     {
-        return $this->belongsTo(Building::class, 'building_id', 'building_id');
+        return $this->belongsTo(JobStatus::class, 'job_status_id');
     }
 
-    public function subcontractor(): BelongsTo
+    public function requestSource(): BelongsTo
     {
-        return $this->belongsTo(Subcontractor::class, 'subcontractor_id', 'subcontractor_id');
+        return $this->belongsTo(RequestSource::class, 'request_source_id');
     }
 
-    public function pendingJob(): HasOne
+    public function references(): HasMany
     {
-        return $this->hasOne(PendingJob::class, 'job_id', 'job_id');
+        return $this->hasMany(WorkOrderReference::class, 'work_order_id');
+    }
+
+    public function staffAssignments(): HasMany
+    {
+        return $this->hasMany(WorkOrderStaff::class, 'work_order_id');
+    }
+
+    public function workOrderVendors(): HasMany
+    {
+        return $this->hasMany(WorkOrderVendor::class, 'work_order_id');
+    }
+
+    public function vendorDailyStatusReports(): HasMany
+    {
+        return $this->hasMany(VendorDailyStatusReport::class, 'work_order_id');
     }
 }

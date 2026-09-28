@@ -16,8 +16,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',      // slug legacy (compatibilidad)
-        'role_id',   // FK a roles.role_id (nuevo)
+        'role',
+        'role_id',
     ];
 
     protected $hidden = [
@@ -25,7 +25,6 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    // Slugs legacy conservados para middleware existente.
     public const ROLE_ADMIN = 'admin';
 
     public const ROLE_CLERK = 'billing_clerk';
@@ -41,7 +40,7 @@ class User extends Authenticatable
 
     public function roleModel(): BelongsTo
     {
-        return $this->belongsTo(Role::class, 'role_id', 'role_id');
+        return $this->belongsTo(Role::class, 'role_id');
     }
 
     public function roleSlug(): ?string
@@ -68,13 +67,11 @@ class User extends Authenticatable
     }
 
     /**
-     * Devuelve un mapa slug => nombre a partir del catálogo persistido o del enum estático.
-     *
      * @return array<string, string>
      */
     public static function roles(): array
     {
-        $rows = Role::query()->orderBy('role_id')->get(['slug', 'name']);
+        $rows = Role::query()->orderBy('id')->get(['slug', 'name']);
 
         if ($rows->isEmpty()) {
             return collect(Role::catalog())->pluck('name', 'slug')->all();

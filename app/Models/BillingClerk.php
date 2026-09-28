@@ -5,16 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class ManagementCompany extends Model
+class BillingClerk extends Model
 {
     public $timestamps = false;
 
     protected $fillable = [
+        'code',
         'name',
+        'email',
+        'phone',
     ];
 
     public function properties(): HasMany
     {
-        return $this->hasMany(Property::class, 'management_id');
+        return $this->hasMany(Property::class, 'billing_clerk_id');
     }
 }

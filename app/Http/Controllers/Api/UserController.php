@@ -105,7 +105,7 @@ class UserController extends Controller
                 Rule::unique('users', 'email')->ignore($user?->id),
             ],
             // Se acepta role_id (nuevo) o role slug (compatibilidad).
-            'role_id' => ['nullable', 'integer', Rule::exists('roles', 'role_id')],
+            'role_id' => ['nullable', 'integer', Rule::exists('user_roles', 'id')],
             'role' => ['nullable', 'string', 'max:64'],
         ];
 
@@ -130,7 +130,7 @@ class UserController extends Controller
             }
         } elseif (! empty($data['role'])) {
             // Si vino solo slug, intentar resolver a role_id.
-            $roleId = Role::query()->where('slug', $data['role'])->value('role_id');
+            $roleId = Role::query()->where('slug', $data['role'])->value('id');
             $data['role_id'] = $roleId;
         }
 

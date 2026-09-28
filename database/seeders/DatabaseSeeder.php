@@ -11,10 +11,8 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1) Catálogo de roles (7 valores fijos)
         $this->call([RoleSeeder::class]);
 
-        // 2) Admin por defecto
         $adminRole = Role::query()->where('slug', Role::SLUG_ADMIN)->first();
 
         User::updateOrCreate(
@@ -23,11 +21,10 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Admin BuildCare',
                 'password' => Hash::make('password'),
                 'role' => User::ROLE_ADMIN,
-                'role_id' => $adminRole?->role_id,
+                'role_id' => $adminRole?->id,
             ],
         );
 
-        // 3) Usuario schedule coordinator de ejemplo
         $schedulerRole = Role::query()->where('slug', Role::SLUG_SCHEDULER_COORDINATOR)->first();
 
         User::updateOrCreate(
@@ -36,13 +33,12 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Scheduler Demo',
                 'password' => Hash::make('password'),
                 'role' => Role::SLUG_SCHEDULER_COORDINATOR,
-                'role_id' => $schedulerRole?->role_id,
+                'role_id' => $schedulerRole?->id,
             ],
         );
 
-        // 4) Data de dominio
         $this->call([
-            ErdDemoSeeder::class,
+            BcManagementSeeder::class,
         ]);
     }
 }

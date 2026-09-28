@@ -5,8 +5,8 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/** @mixin \App\Models\ManagementCompany */
-class ManagementCompanyResource extends JsonResource
+/** @mixin \App\Models\Vendor */
+class VendorResource extends JsonResource
 {
     /**
      * @return array<string, mixed>
@@ -15,9 +15,9 @@ class ManagementCompanyResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'management_id' => $this->id,
             'name' => $this->name,
-            'properties_count' => $this->whenCounted('properties'),
+            'email' => $this->email,
+            'phone' => $this->phone,
         ];
     }
 }

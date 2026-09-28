@@ -27,7 +27,7 @@ class RoleController extends Controller
         $perPage = min((int) $request->query('per_page', 50), 100);
 
         return RoleResource::collection(
-            $query->orderBy('role_id')->paginate($perPage)
+            $query->orderBy('id')->paginate($perPage)
         );
     }
 
@@ -45,7 +45,7 @@ class RoleController extends Controller
 
     public function update(Request $request, Role $role): RoleResource
     {
-        $role->update($this->validated($request, $role->role_id));
+        $role->update($this->validated($request, $role->id));
 
         return new RoleResource($role->fresh()->loadCount('users'));
     }
@@ -77,7 +77,7 @@ class RoleController extends Controller
     private function validated(Request $request, ?int $id = null): array
     {
         return $request->validate([
-            'slug' => ['required', 'string', 'max:64', 'regex:/^[a-z0-9_\-]+$/', Rule::unique('roles', 'slug')->ignore($id, 'role_id')],
+            'slug' => ['required', 'string', 'max:64', 'regex:/^[a-z0-9_\-]+$/', Rule::unique('user_roles', 'slug')->ignore($id)],
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:255'],
             'can_manage_schedule' => ['sometimes', 'boolean'],

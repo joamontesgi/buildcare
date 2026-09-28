@@ -5,19 +5,14 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/** @mixin \App\Models\ManagementCompany */
-class ManagementCompanyResource extends JsonResource
+/** @mixin \App\Models\JobStatus */
+class JobStatusResource extends JsonResource
 {
-    /**
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         return [
             'id' => $this->id,
-            'management_id' => $this->id,
             'name' => $this->name,
-            'properties_count' => $this->whenCounted('properties'),
         ];
     }
 }

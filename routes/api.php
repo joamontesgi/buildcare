@@ -1,18 +1,17 @@
 <?php
 
-use App\Http\Controllers\Api\AgendaController;
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\BuildingController;
+use App\Http\Controllers\Api\BillingClerkController;
+use App\Http\Controllers\Api\CatalogStatusController;
+use App\Http\Controllers\Api\EmployeeController;
 use App\Http\Controllers\Api\ManagementCompanyController;
-use App\Http\Controllers\Api\PendingJobController;
+use App\Http\Controllers\Api\PropertyController;
 use App\Http\Controllers\Api\RoleController;
-use App\Http\Controllers\Api\ScheduleDayController;
-use App\Http\Controllers\Api\StaffController;
-use App\Http\Controllers\Api\SubcontractorController;
-use App\Http\Controllers\Api\SubcontractorEmployeeController;
+use App\Http\Controllers\Api\StaffRoleController;
+use App\Http\Controllers\Api\StateController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\VendorController;
 use App\Http\Controllers\Api\WorkOrderController;
-use App\Http\Controllers\Api\ZoneController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('test', fn () => response('hola', 200, ['Content-Type' => 'text/plain; charset=UTF-8']));
@@ -23,44 +22,34 @@ Route::middleware(['auth:sanctum'])->group(function (): void {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::get('/user', [UserController::class, 'show']);
 
-    // Roles legibles por cualquier usuario autenticado (para poblar dropdowns)
     Route::get('roles', [RoleController::class, 'index']);
     Route::get('roles/{role}', [RoleController::class, 'show']);
     Route::get('/user-roles', [UserController::class, 'roles']);
 
-    // Administración: creación/edición/borrado (solo admin)
     Route::middleware('admin')->group(function (): void {
         Route::apiResource('users', UserController::class)->except(['show']);
         Route::apiResource('roles', RoleController::class)->except(['index', 'show']);
     });
 
-    // Catálogos maestros
     Route::apiResource('management-companies', ManagementCompanyController::class);
-    Route::apiResource('zones', ZoneController::class);
+    Route::apiResource('states', StateController::class);
+    Route::apiResource('billing-clerks', BillingClerkController::class);
+    Route::apiResource('staff-roles', StaffRoleController::class);
+    Route::apiResource('employees', EmployeeController::class);
+    Route::apiResource('properties', PropertyController::class);
+    Route::apiResource('vendors', VendorController::class);
 
-    Route::get('staff/roles', [StaffController::class, 'roles']);
-    Route::apiResource('staff', StaffController::class)->parameters(['staff' => 'staff']);
-
-    Route::apiResource('buildings', BuildingController::class);
-
-    // Subcontractors + empleados (routes anidadas)
-    Route::apiResource('subcontractors', SubcontractorController::class);
-    Route::apiResource('subcontractors.employees', SubcontractorEmployeeController::class)
-        ->shallow();
-
-    // Agenda / operación
-    // Schedule Days + generación de agenda: solo admin o scheduler_coordinator
-    Route::middleware('schedule.manage')->group(function (): void {
-        Route::apiResource('schedule-days', ScheduleDayController::class)
-            ->parameters(['schedule-days' => 'scheduleDay']);
-
-        Route::get('agenda/{day}', [AgendaController::class, 'show']);
-        Route::get('agenda/{day}/export/xlsx', [AgendaController::class, 'exportXlsx']);
-        Route::get('agenda/{day}/export/pdf', [AgendaController::class, 'exportPdf']);
-    });
+    Route::get('worksite-statuses', [CatalogStatusController::class, 'worksiteStatuses']);
+    Route::post('worksite-statuses', [CatalogStatusController::class, 'storeWorksiteStatus']);
+    Route::get('job-statuses', [CatalogStatusController::class, 'jobStatuses']);
+    Route::post('job-statuses', [CatalogStatusController::class, 'storeJobStatus']);
+    Route::get('request-sources', [CatalogStatusController::class, 'requestSources']);
+    Route::post('request-sources', [CatalogStatusController::class, 'storeRequestSource']);
 
     Route::get('work-orders/statuses', [WorkOrderController::class, 'statuses']);
     Route::apiResource('work-orders', WorkOrderController::class);
 
-    Route::apiResource('pending-jobs', PendingJobController::class);
+    // Compatibilidad temporal con clientes que aún llamen /buildings
+    Route::get('buildings', [PropertyController::class, 'index']);
+    Route::get('buildings/{property}', [PropertyController::class, 'show']);
 });

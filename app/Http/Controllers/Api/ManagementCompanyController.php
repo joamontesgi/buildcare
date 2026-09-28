@@ -14,7 +14,7 @@ class ManagementCompanyController extends Controller
 {
     public function index(Request $request): AnonymousResourceCollection
     {
-        $query = ManagementCompany::query()->withCount('buildings');
+        $query = ManagementCompany::query()->withCount('properties');
 
         if ($search = trim((string) $request->query('search', ''))) {
             $query->where('name', 'like', "%{$search}%");
@@ -37,14 +37,14 @@ class ManagementCompanyController extends Controller
 
     public function show(ManagementCompany $managementCompany): ManagementCompanyResource
     {
-        return new ManagementCompanyResource($managementCompany->loadCount('buildings'));
+        return new ManagementCompanyResource($managementCompany->loadCount('properties'));
     }
 
     public function update(Request $request, ManagementCompany $managementCompany): ManagementCompanyResource
     {
-        $managementCompany->update($this->validated($request, $managementCompany->management_id));
+        $managementCompany->update($this->validated($request, $managementCompany->id));
 
-        return new ManagementCompanyResource($managementCompany->fresh()->loadCount('buildings'));
+        return new ManagementCompanyResource($managementCompany->fresh()->loadCount('properties'));
     }
 
     public function destroy(ManagementCompany $managementCompany): JsonResponse
@@ -60,7 +60,7 @@ class ManagementCompanyController extends Controller
     private function validated(Request $request, ?int $id = null): array
     {
         return $request->validate([
-            'name' => ['required', 'string', 'max:255', Rule::unique('management_companies', 'name')->ignore($id, 'management_id')],
+            'name' => ['required', 'string', 'max:150', Rule::unique('management_companies', 'name')->ignore($id)],
         ]);
     }
 }
