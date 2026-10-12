@@ -16,6 +16,7 @@ return new class extends Migration
             $table->boolean('can_manage_schedule')->default(false);
             $table->boolean('is_admin')->default(false);
             $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::table('users', function (Blueprint $table): void {

@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class WorksiteStatus extends Model
+class UnitSize extends Model
 {
-    public $timestamps = false;
+    use SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -15,6 +16,6 @@ class WorksiteStatus extends Model
 
     public function workOrders(): HasMany
     {
-        return $this->hasMany(WorkOrder::class, 'worksite_status_id');
+        return $this->hasMany(WorkOrder::class, 'unit_size_id');
     }
 }

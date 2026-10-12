@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ManagementCompany extends Model
 {
-    public $timestamps = false;
+    use SoftDeletes;
 
     protected $fillable = [
         'name',

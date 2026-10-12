@@ -5,10 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\JobStatusResource;
 use App\Http\Resources\RequestSourceResource;
-use App\Http\Resources\WorksiteStatusResource;
 use App\Models\JobStatus;
 use App\Models\RequestSource;
-use App\Models\WorksiteStatus;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -16,18 +14,6 @@ use Illuminate\Validation\Rule;
 
 class CatalogStatusController extends Controller
 {
-    public function worksiteStatuses(Request $request): AnonymousResourceCollection
-    {
-        return $this->listCatalog($request, WorksiteStatus::query(), WorksiteStatusResource::class);
-    }
-
-    public function storeWorksiteStatus(Request $request): JsonResponse
-    {
-        $row = WorksiteStatus::query()->create($this->nameRules($request, 'worksite_statuses'));
-
-        return (new WorksiteStatusResource($row))->response()->setStatusCode(201);
-    }
-
     public function jobStatuses(Request $request): AnonymousResourceCollection
     {
         return $this->listCatalog($request, JobStatus::query(), JobStatusResource::class);

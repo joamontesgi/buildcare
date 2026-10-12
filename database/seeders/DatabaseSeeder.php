@@ -25,7 +25,6 @@ class DatabaseSeeder extends Seeder
             StaffRoleSeeder::class,
             EmployeeSeeder::class,
             JobStatusSeeder::class,
-            WorksiteStatusSeeder::class,
             RequestSourceSeeder::class,
             VendorSeeder::class,
         ]);

@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class WorkOrderReference extends Model
 {
-    public $timestamps = false;
+    use SoftDeletes;
 
     protected $fillable = [
         'work_order_id',

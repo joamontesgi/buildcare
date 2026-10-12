@@ -24,6 +24,10 @@ class VendorController extends Controller
             });
         }
 
+        if ($request->has('is_enabled')) {
+            $query->where('is_enabled', filter_var($request->query('is_enabled'), FILTER_VALIDATE_BOOLEAN));
+        }
+
         $perPage = min((int) $request->query('per_page', 25), 100);
 
         return VendorResource::collection(
@@ -63,9 +67,10 @@ class VendorController extends Controller
     private function validated(Request $request, ?int $id = null): array
     {
         return $request->validate([
-            'name' => ['required', 'string', 'max:200'],
+            'name' => [$id === null ? 'required' : 'sometimes', 'string', 'max:200'],
             'phone' => ['nullable', 'string', 'max:50'],
             'email' => ['nullable', 'email', 'max:255', Rule::unique('vendors', 'email')->ignore($id)],
+            'is_enabled' => ['sometimes', 'boolean'],
         ]);
     }
 }

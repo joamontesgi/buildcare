@@ -15,19 +15,24 @@ class WorkOrderResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'order_code' => $this->order_code,
+            'execution_date' => $this->execution_date?->format('Y-m-d'),
             'property_id' => $this->property_id,
             'unit_area' => $this->unit_area,
-            'size' => $this->size,
-            'worksite_status_id' => $this->worksite_status_id,
+            'unit_size_id' => $this->unit_size_id,
+            'unit_size' => $this->whenLoaded(
+                'unitSize',
+                fn () => $this->unitSize ? new UnitSizeResource($this->unitSize) : null
+            ),
+            'site_status' => $this->site_status,
             'job_status_id' => $this->job_status_id,
             'job_description' => $this->job_description,
-            'bc_work_order' => $this->bc_work_order,
             'bc_estimate' => $this->bc_estimate,
             'extras' => $this->extras,
             'special_notes_sequence' => $this->special_notes_sequence,
+            'source' => $this->source,
             'request_source_id' => $this->request_source_id,
             'property' => $this->whenLoaded('property', fn () => new PropertyResource($this->property)),
-            'worksite_status' => $this->whenLoaded('worksiteStatus', fn () => new WorksiteStatusResource($this->worksiteStatus)),
             'job_status' => $this->whenLoaded('jobStatus', fn () => $this->jobStatus ? new JobStatusResource($this->jobStatus) : null),
             'request_source' => $this->whenLoaded('requestSource', fn () => $this->requestSource ? new RequestSourceResource($this->requestSource) : null),
             'references' => WorkOrderReferenceResource::collection($this->whenLoaded('references')),

@@ -2,38 +2,84 @@
 
 namespace App\Models;
 
+use App\Support\WorkOrderJobStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class WorkOrder extends Model
 {
-    public const UPDATED_AT = 'updated_at';
+    use SoftDeletes;
 
-    public const CREATED_AT = 'created_at';
+    public const FIRST_ORDER_CODE = 2015;
+
+    protected static function booted(): void
+    {
+        static::creating(function (WorkOrder $order): void {
+            if ($order->order_code === null) {
+                $order->order_code = static::nextOrderCode();
+            }
+
+            if ($order->job_status_id === null) {
+                $order->job_status_id = WorkOrderJobStatus::scheduledId();
+            }
+        });
+    }
+
+    protected $casts = [
+        'bc_estimate' => 'integer',
+        'execution_date' => 'date:Y-m-d',
+    ];
 
     protected $fillable = [
+        'order_code',
+        'execution_date',
         'property_id',
         'unit_area',
-        'size',
-        'worksite_status_id',
+        'unit_size_id',
+        'site_status',
         'job_status_id',
         'job_description',
-        'bc_work_order',
         'bc_estimate',
         'extras',
         'special_notes_sequence',
+        'source',
         'request_source_id',
     ];
+
+    public static function nextOrderCode(): int
+    {
+        $last = static::withTrashed()
+            ->lockForUpdate()
+            ->orderByDesc('order_code')
+            ->value('order_code');
+
+        $next = ($last ?? (self::FIRST_ORDER_CODE - 1)) + 1;
+
+        return max($next, self::FIRST_ORDER_CODE);
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Builder<self>  $query
+     * @return \Illuminate\Database\Eloquent\Builder<self>
+     */
+    public function scopeOrderedForDisplay($query)
+    {
+        return $query
+            ->orderBy('execution_date')
+            ->orderBy('order_code')
+            ->orderBy('id');
+    }
 
     public function property(): BelongsTo
     {
         return $this->belongsTo(Property::class, 'property_id');
     }
 
-    public function worksiteStatus(): BelongsTo
+    public function unitSize(): BelongsTo
     {
-        return $this->belongsTo(WorksiteStatus::class, 'worksite_status_id');
+        return $this->belongsTo(UnitSize::class, 'unit_size_id')->withTrashed();
     }
 
     public function jobStatus(): BelongsTo

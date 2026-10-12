@@ -13,7 +13,8 @@ use App\Models\WorkOrder;
 use App\Models\WorkOrderReference;
 use App\Models\WorkOrderStaff;
 use App\Models\WorkOrderVendor;
-use App\Models\WorksiteStatus;
+use App\Models\UnitSize;
+use App\Support\SiteOccupancyStatus;
 use Illuminate\Database\Seeder;
 
 class WorkOrderSeeder extends Seeder
@@ -27,17 +28,16 @@ class WorkOrderSeeder extends Seeder
             return;
         }
 
-        $occupied = WorksiteStatus::query()->where('name', 'Occupied')->firstOrFail();
-        $inProgress = WorksiteStatus::query()->where('name', 'In Progress')->firstOrFail();
         $requestSource = RequestSource::query()->where('name', 'Request / PO / WTN / WO')->firstOrFail();
-        $jobAwarded = JobStatus::query()->where('name', 'Awarded')->first();
-        $jobInProgress = JobStatus::query()->where('name', 'In Progress')->first();
+        $scheduled = JobStatus::query()->where('name', 'Scheduled')->firstOrFail();
+        $done = JobStatus::query()->where('name', 'Done')->first();
 
         $supervisorRole = StaffRole::query()->where('name', 'BC Supervisor / Runner')->firstOrFail();
         $pmRole = StaffRole::query()->where('name', 'BC Project Manager')->firstOrFail();
         $junior = Employee::query()->where('first_name', 'Junior')->first();
         $jarvis = Employee::query()->where('first_name', 'Jarvis')->first();
         $vendor = Vendor::query()->orderBy('id')->first();
+        $sizeOneOne = UnitSize::query()->firstOrCreate(['name' => '1/1']);
 
         $order1 = WorkOrder::query()->updateOrCreate(
             [
@@ -46,10 +46,10 @@ class WorkOrderSeeder extends Seeder
                 'job_description' => 'Purchase and Install: bathroom exhaust. NOTE: The same one we used in the other units',
             ],
             [
-                'worksite_status_id' => $occupied->id,
-                'job_status_id' => $jobAwarded?->id,
+                'execution_date' => now()->toDateString(),
+                'site_status' => SiteOccupancyStatus::OCCUPIED,
+                'job_status_id' => $scheduled->id,
                 'request_source_id' => $requestSource->id,
-                'bc_work_order' => null,
                 'bc_estimate' => null,
             ],
         );
@@ -92,12 +92,12 @@ class WorkOrderSeeder extends Seeder
                 'job_description' => 'Replace kitchen faucet and check shut-off valves',
             ],
             [
-                'worksite_status_id' => $inProgress->id,
-                'job_status_id' => $jobInProgress?->id,
+                'execution_date' => now()->addDay()->toDateString(),
+                'site_status' => SiteOccupancyStatus::VACANT,
+                'job_status_id' => $done?->id ?? $scheduled->id,
                 'request_source_id' => $requestSource->id,
-                'size' => '1/1',
-                'bc_work_order' => 'BCWO-1201',
-                'bc_estimate' => 'EST-4450',
+                'unit_size_id' => $sizeOneOne->id,
+                'bc_estimate' => 4450.00,
                 'extras' => 'Tenant move-in Friday',
             ],
         );

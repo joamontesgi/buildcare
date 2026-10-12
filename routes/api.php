@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\PropertyController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\StaffRoleController;
 use App\Http\Controllers\Api\StateController;
+use App\Http\Controllers\Api\UnitSizeController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\VendorController;
 use App\Http\Controllers\Api\WorkOrderController;
@@ -38,15 +39,17 @@ Route::middleware(['auth:sanctum'])->group(function (): void {
     Route::apiResource('employees', EmployeeController::class);
     Route::apiResource('properties', PropertyController::class);
     Route::apiResource('vendors', VendorController::class);
+    Route::apiResource('unit-sizes', UnitSizeController::class)->only(['index', 'store']);
 
-    Route::get('worksite-statuses', [CatalogStatusController::class, 'worksiteStatuses']);
-    Route::post('worksite-statuses', [CatalogStatusController::class, 'storeWorksiteStatus']);
     Route::get('job-statuses', [CatalogStatusController::class, 'jobStatuses']);
     Route::post('job-statuses', [CatalogStatusController::class, 'storeJobStatus']);
     Route::get('request-sources', [CatalogStatusController::class, 'requestSources']);
     Route::post('request-sources', [CatalogStatusController::class, 'storeRequestSource']);
 
     Route::get('work-orders/statuses', [WorkOrderController::class, 'statuses']);
+    Route::get('work-orders/job-status-options', [WorkOrderController::class, 'jobStatusOptions']);
+    Route::get('work-orders/unit-area-matches', [WorkOrderController::class, 'unitAreaMatches']);
+    Route::post('work-orders/{work_order}/job-status', [WorkOrderController::class, 'updateJobStatus']);
     Route::apiResource('work-orders', WorkOrderController::class);
 
     // Compatibilidad temporal con clientes que aún llamen /buildings

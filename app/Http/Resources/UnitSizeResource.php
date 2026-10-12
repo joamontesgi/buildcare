@@ -5,9 +5,12 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/** @mixin \App\Models\WorksiteStatus */
-class WorksiteStatusResource extends JsonResource
+/** @mixin \App\Models\UnitSize */
+class UnitSizeResource extends JsonResource
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(Request $request): array
     {
         return [

@@ -4,13 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /** Roles operativos en propiedades / órdenes (tabla roles en bc.sql). */
 class StaffRole extends Model
 {
-    protected $table = 'roles';
+    use SoftDeletes;
 
-    public $timestamps = false;
+    protected $table = 'roles';
 
     protected $fillable = [
         'name',

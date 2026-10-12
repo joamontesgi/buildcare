@@ -5,15 +5,21 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Vendor extends Model
 {
-    public $timestamps = false;
+    use SoftDeletes;
 
     protected $fillable = [
         'name',
         'email',
         'phone',
+        'is_enabled',
+    ];
+
+    protected $casts = [
+        'is_enabled' => 'boolean',
     ];
 
     public function workOrders(): BelongsToMany

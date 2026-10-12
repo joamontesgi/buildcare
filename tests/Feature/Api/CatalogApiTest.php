@@ -25,6 +25,8 @@ class CatalogApiTest extends TestCase
         Property::query()->create([
             'building_name' => 'Test Tower',
             'address' => '100 Main St',
+            'city' => 'Newark',
+            'zip_code' => '07102',
             'state_id' => $state->id,
             'management_id' => $management->id,
         ]);
@@ -32,7 +34,30 @@ class CatalogApiTest extends TestCase
         $this->getJson('/api/buildings')
             ->assertOk()
             ->assertJsonPath('data.0.building_name', 'Test Tower')
-            ->assertJsonPath('data.0.address', '100 Main St');
+            ->assertJsonPath('data.0.address', '100 Main St')
+            ->assertJsonPath('data.0.management_company.name', 'Greystar');
+    }
+
+    public function test_property_search_includes_management_name_and_returns_management_company(): void
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        $state = State::query()->create(['code' => 'NJ', 'name' => 'New Jersey']);
+        $management = ManagementCompany::query()->create(['name' => 'Vivmark Residential']);
+        Property::query()->create([
+            'building_name' => 'Hidden Name Tower',
+            'address' => '1 Side St',
+            'city' => 'Edgewater',
+            'zip_code' => '07020',
+            'state_id' => $state->id,
+            'management_id' => $management->id,
+        ]);
+
+        $this->getJson('/api/properties?search=Vivmark')
+            ->assertOk()
+            ->assertJsonPath('data.0.building_name', 'Hidden Name Tower')
+            ->assertJsonPath('data.0.management_company.name', 'Vivmark Residential');
     }
 
     public function test_property_requires_valid_state(): void
@@ -45,6 +70,8 @@ class CatalogApiTest extends TestCase
         $this->postJson('/api/properties', [
             'building_name' => 'Invalid State Tower',
             'address' => '100 Main St',
+            'city' => 'Newark',
+            'zip_code' => '07102',
             'state_id' => 999999,
             'management_id' => $management->id,
         ])
