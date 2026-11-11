@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Matriculado;
 use App\Support\MatriculadoFields;
+use App\Support\MatriculadoGrades;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -38,6 +39,11 @@ class MatriculadoExcelImporter
           $sheet->getCellByColumnAndRow($columnIndex, $row)->getFormattedValue()
         );
       }
+
+      [$attributes['papa'], $attributes['promedio_actual']] = MatriculadoGrades::reconcile(
+        isset($attributes['papa']) ? (string) $attributes['papa'] : null,
+        isset($attributes['promedio_actual']) ? (string) $attributes['promedio_actual'] : null,
+      );
 
       if ($this->isBlankRow($attributes)) {
         continue;
@@ -136,7 +142,7 @@ class MatriculadoExcelImporter
     }
 
     if (in_array($attribute, ['papa', 'promedio_actual'], true)) {
-      return $this->normalizeDecimal($value, 0, 5);
+      return MatriculadoGrades::clamp($value);
     }
 
     if ($attribute === 'cupo_creditos') {

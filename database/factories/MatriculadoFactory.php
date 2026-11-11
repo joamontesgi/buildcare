@@ -21,7 +21,8 @@ class MatriculadoFactory extends Factory
         $genero = $sexo === 'M' ? 'MASCULINO' : 'FEMENINO';
         $documento = (string) fake()->unique()->numberBetween(10_000_000, 99_999_999_999);
         $login = 'u'.substr($documento, -8);
-        $papa = fake()->randomFloat(2, 0, 5);
+        $papa = fake()->randomFloat(2, 3, 5);
+        $promedioActual = fake()->randomFloat(2, $papa, 5);
         $cupo = fake()->numberBetween(8, 22);
         $avance = fake()->randomFloat(2, 5, 100);
 
@@ -41,7 +42,7 @@ class MatriculadoFactory extends Factory
             'pbm' => (string) fake()->numberBetween(0, 100),
             'matriculas' => (string) fake()->numberBetween(1, 12),
             'papa' => $papa,
-            'promedio_actual' => fake()->randomFloat(2, 0, 5),
+            'promedio_actual' => $promedioActual,
             'cupo_creditos' => $cupo,
             'porcentaje_avance' => $avance,
             'periodo_papa' => fake()->randomElement(['2024-2S', '2025-1S', '2025-2S']),
