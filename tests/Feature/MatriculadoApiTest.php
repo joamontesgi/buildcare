@@ -27,7 +27,7 @@ class MatriculadoApiTest extends TestCase
             'login' => 'estudiante1',
             'correo' => 'real@uni.edu.co',
             'estrato' => '2',
-            'pbm' => 'SI',
+            'pbm' => '72',
             'matriculas' => '1',
             'tipcolegio' => 'OFICIAL',
             'ano_terminacion_colegio' => '2020',

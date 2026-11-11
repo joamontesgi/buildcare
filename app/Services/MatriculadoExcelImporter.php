@@ -131,6 +131,21 @@ class MatriculadoExcelImporter
       return is_numeric($value) ? (int) $value : null;
     }
 
+    if ($attribute === 'pbm') {
+      return $this->normalizePbm($value);
+    }
+
     return is_scalar($value) ? (string) $value : null;
+  }
+
+  private function normalizePbm(mixed $value): ?string
+  {
+    if (! is_numeric($value)) {
+      return null;
+    }
+
+    $pbm = (int) round((float) $value);
+
+    return (string) max(0, min(100, $pbm));
   }
 }

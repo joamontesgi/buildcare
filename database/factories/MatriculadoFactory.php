@@ -35,7 +35,7 @@ class MatriculadoFactory extends Factory
             'login' => $login,
             'correo' => $login.'@unal.edu.co',
             'estrato' => (string) fake()->numberBetween(1, 6),
-            'pbm' => fake()->randomElement(['SI', 'NO']),
+            'pbm' => (string) fake()->numberBetween(0, 100),
             'matriculas' => (string) fake()->numberBetween(1, 12),
             'tipcolegio' => fake()->randomElement(['OFICIAL', 'PRIVADO', 'OTRO']),
             'ano_terminacion_colegio' => (string) fake()->numberBetween(2010, 2025),
