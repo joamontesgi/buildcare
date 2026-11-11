@@ -1,0 +1,31 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Matriculado extends Model
+{
+  protected $fillable = [
+    'nombre_legal',
+    'apellido1_legal',
+    'apellido2_legal',
+    'documento',
+    'acceso',
+    'subacceso',
+    'edad',
+    'sexo_legal',
+    'genero',
+    'login',
+    'correo',
+    'estrato',
+    'pbm',
+    'matriculas',
+    'tipcolegio',
+    'ano_terminacion_colegio',
+  ];
+
+  protected $casts = [
+    'edad' => 'integer',
+  ];
+}
