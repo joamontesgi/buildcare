@@ -135,7 +135,31 @@ class MatriculadoExcelImporter
       return $this->normalizePbm($value);
     }
 
+    if (in_array($attribute, ['papa', 'promedio_actual'], true)) {
+      return $this->normalizeDecimal($value, 0, 5);
+    }
+
+    if ($attribute === 'cupo_creditos') {
+      return is_numeric($value) ? (int) max(0, round((float) $value)) : null;
+    }
+
+    if ($attribute === 'porcentaje_avance') {
+      return $this->normalizeDecimal($value, 0, 100);
+    }
+
     return is_scalar($value) ? (string) $value : null;
+  }
+
+  private function normalizeDecimal(mixed $value, float $min, float $max): ?string
+  {
+    if (! is_numeric($value)) {
+      return null;
+    }
+
+    $number = (float) $value;
+    $number = max($min, min($max, $number));
+
+    return number_format($number, 2, '.', '');
   }
 
   private function normalizePbm(mixed $value): ?string

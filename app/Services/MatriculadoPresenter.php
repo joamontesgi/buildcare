@@ -9,45 +9,44 @@ use Faker\Generator;
 
 class MatriculadoPresenter
 {
-  /**
-   * @return array<string, mixed>
-   */
-  public function toPublicArray(Matriculado $matriculado): array
-  {
-    $faker = $this->fakerFor($matriculado->id);
+    /**
+     * @return array<string, mixed>
+     */
+    public function toPublicArray(Matriculado $matriculado): array
+    {
+        $faker = $this->fakerFor($matriculado->id);
 
-    $row = [];
-    foreach (MatriculadoFields::ALLOWED as $field) {
-      $attribute = MatriculadoFields::toAttribute($field);
+        $row = [];
+        foreach (MatriculadoFields::API_PUBLIC as $field) {
+            if (in_array($field, MatriculadoFields::SENSITIVE, true)) {
+                $row[$field] = $this->fakeSensitive($field, $faker);
 
-      if (in_array($field, MatriculadoFields::SENSITIVE, true)) {
-        $row[$field] = $this->fakeSensitive($field, $faker);
+                continue;
+            }
 
-        continue;
-      }
+            $attribute = MatriculadoFields::fieldToAttribute($field);
+            $row[$field] = $matriculado->{$attribute};
+        }
 
-      $row[$field] = $matriculado->{$attribute};
+        return $row;
     }
 
-    return $row;
-  }
+    private function fakerFor(int $seed): Generator
+    {
+        $faker = Factory::create(config('app.faker_locale', 'es_CO'));
+        $faker->seed($seed * 1009);
 
-  private function fakerFor(int $seed): Generator
-  {
-    $faker = Factory::create(config('app.faker_locale', 'es_CO'));
-    $faker->seed($seed * 1009);
+        return $faker;
+    }
 
-    return $faker;
-  }
-
-  private function fakeSensitive(string $field, Generator $faker): string
-  {
-    return match ($field) {
-      'NOMBRE_LEGAL' => $faker->firstName(),
-      'APELLIDO1_LEGAL' => $faker->lastName(),
-      'APELLIDO2_LEGAL' => $faker->lastName(),
-      'DOCUMENTO' => (string) $faker->numberBetween(10_000_000, 99_999_999_999),
-      default => $faker->word(),
-    };
-  }
+    private function fakeSensitive(string $field, Generator $faker): string
+    {
+        return match ($field) {
+            'NOMBRE_LEGAL' => $faker->firstName(),
+            'APELLIDO1_LEGAL' => $faker->lastName(),
+            'APELLIDO2_LEGAL' => $faker->lastName(),
+            'DOCUMENTO' => (string) $faker->numberBetween(10_000_000, 99_999_999_999),
+            default => $faker->word(),
+        };
+    }
 }

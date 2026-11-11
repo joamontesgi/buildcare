@@ -24,11 +24,20 @@ class Matriculado extends Model
     'estrato',
     'pbm',
     'matriculas',
+    'papa',
+    'promedio_actual',
+    'cupo_creditos',
+    'porcentaje_avance',
+    'periodo_papa',
     'tipcolegio',
     'ano_terminacion_colegio',
   ];
 
   protected $casts = [
     'edad' => 'integer',
+    'papa' => 'decimal:2',
+    'promedio_actual' => 'decimal:2',
+    'cupo_creditos' => 'integer',
+    'porcentaje_avance' => 'decimal:2',
   ];
 }
