@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        @apply bg-sky-50 text-slate-800;
+    }
+}
+
+@layer components {
+    .bc-card {
+        @apply bg-white rounded-xl shadow-sm border border-sky-100 overflow-hidden;
+    }
+
+    .bc-card-header {
+        @apply bg-gradient-to-r from-sky-400 to-sky-500 px-6 py-4 text-white;
+    }
+
+    .bc-btn-primary {
+        @apply inline-flex items-center gap-2 px-4 py-2.5 bg-sky-500 hover:bg-sky-600 active:bg-sky-700 text-white font-semibold text-sm rounded-lg shadow-sm transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-offset-2;
+    }
+
+    .bc-btn-secondary {
+        @apply inline-flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-sky-50 text-slate-700 font-semibold text-sm rounded-lg border border-sky-200 shadow-sm transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-offset-2;
+    }
+
+    .bc-btn-danger {
+        @apply inline-flex items-center gap-1 px-3 py-1.5 text-red-600 hover:text-white hover:bg-red-600 font-medium text-sm rounded-md border border-red-200 hover:border-red-600 transition-all duration-150;
+    }
+
+    .bc-btn-edit {
+        @apply inline-flex items-center gap-1 px-3 py-1.5 text-sky-600 hover:text-white hover:bg-sky-500 font-medium text-sm rounded-md border border-sky-200 hover:border-sky-500 transition-all duration-150;
+    }
+
+    .bc-btn-pdf {
+        @apply inline-flex items-center gap-1 px-3 py-1.5 text-red-600 hover:text-white hover:bg-red-500 font-medium text-sm rounded-md border border-red-200 hover:border-red-500 transition-all duration-150;
+    }
+
+    .bc-input {
+        @apply mt-1 block w-full rounded-lg border-sky-200 shadow-sm focus:border-sky-400 focus:ring-sky-400 text-sm;
+    }
+
+    .bc-select {
+        @apply mt-1 block w-full rounded-lg border-sky-200 shadow-sm focus:border-sky-400 focus:ring-sky-400 text-sm bg-white;
+    }
+
+    .bc-label {
+        @apply block text-sm font-medium text-slate-700;
+    }
+
+    .bc-badge-occupied {
+        @apply inline-flex px-2.5 py-0.5 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-800;
+    }
+
+    .bc-badge-vacant {
+        @apply inline-flex px-2.5 py-0.5 text-xs font-semibold rounded-full bg-sky-100 text-sky-700;
+    }
+
+    .bc-table th {
+        @apply px-3 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider whitespace-nowrap bg-sky-50 border-b-2 border-sky-200;
+    }
+
+    .bc-table td {
+        @apply px-3 py-2.5 text-sm text-slate-700 border-b border-sky-50;
+    }
+
+    .bc-table tbody tr:hover {
+        @apply bg-sky-50/80;
+    }
+
+    .bc-modal-overlay {
+        @apply fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40;
+    }
+
+    .bc-modal {
+        @apply relative bg-white rounded-2xl shadow-2xl border border-sky-100 z-50 max-h-[90vh] overflow-y-auto;
+    }
+
+    .bc-fab {
+        @apply fixed bottom-6 right-6 z-30 bc-btn-primary rounded-full w-14 h-14 justify-center shadow-lg hover:shadow-xl hover:scale-105;
+    }
+}
